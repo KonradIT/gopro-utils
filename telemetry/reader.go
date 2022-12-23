@@ -1,7 +1,6 @@
 package telemetry
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 )
@@ -122,6 +121,7 @@ func Read(f io.Reader) (*TELEM, error) {
 		"TZON",
 		"CLKC",
 		"DZMX",
+		"FSKP",
 	}
 
 	label := make([]byte, 4, 4) // 4 byte ascii label of data
@@ -143,8 +143,7 @@ func Read(f io.Reader) (*TELEM, error) {
 		label_string := string(label)
 
 		if !stringInSlice(label_string, labels) {
-			err := fmt.Errorf("Could not find label in list: %s (%x)\n", label, label)
-			return nil, err
+			continue
 		}
 
 		// pick out the label description
@@ -246,20 +245,6 @@ func Read(f io.Reader) (*TELEM, error) {
 						return nil, err
 					}
 					t.GpsFix = g
-				} else if "UNIT" == label_string {
-					// this is a string of units like "rad/s", not sure if it changes
-					//fmt.Printf("\tvals: %s\n", value)
-				} else if "SIUN" == label_string {
-					// this is the SI unit - also not sure if it changes
-					//fmt.Printf("\tvals: %s\n", value)
-				} else if "DVNM" == label_string {
-					// device name, "Camera"
-					//fmt.Printf("\tvals: %s\n", value)
-				} else if "FACE" == label_string {
-					// device name, "Camera"
-					fmt.Printf("\tvals: %d\n", value)
-				} else {
-					//fmt.Printf("\tvalue is %v\n", value)
 				}
 			}
 		}
