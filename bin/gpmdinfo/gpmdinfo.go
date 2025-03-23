@@ -33,7 +33,7 @@ func main() {
 	}(telemFile)
 
 	// currently processing sentence
-	t := &telemetry.TELEM{}
+	t := &telemetry.Telem{}
 
 	for {
 		t, err = telemetry.Read(telemFile)
@@ -53,6 +53,6 @@ func main() {
 		// or mangle it to your wishes into JSON/CSV/format of choice
 		fmt.Println(t)
 
-		t = &telemetry.TELEM{}
+		t = &telemetry.Telem{}
 	}
 }

@@ -30,8 +30,8 @@ func main() {
 	}
 	defer telemFile.Close()
 
-	t := &telemetry.TELEM{}
-	t_prev := &telemetry.TELEM{}
+	t := &telemetry.Telem{}
+	t_prev := &telemetry.Telem{}
 
 	track := new(gpx.GPXTrack)
 	segment := new(gpx.GPXTrackSegment)
@@ -54,9 +54,9 @@ func main() {
 
 		// process until t.Time
 		t_prev.FillTimes(t.Time.Time)
-		telems := t_prev.ShitJson()
+		telems := t_prev.Json()
 
-		for i, _ := range telems {
+		for i := range telems {
 			segment.AppendPoint(
 				&gpx.GPXPoint{
 					Point: gpx.Point{
@@ -70,7 +70,7 @@ func main() {
 		}
 
 		*t_prev = *t
-		t = &telemetry.TELEM{}
+		t = &telemetry.Telem{}
 	}
 
 	track.AppendSegment(segment)
@@ -91,5 +91,14 @@ func main() {
 	}(gpxFile)
 
 	xml, err := gpxData.ToXml(gpx.ToXmlParams{Version: "1.1", Indent: true})
-	gpxFile.Write(xml)
+	if err != nil {
+		fmt.Printf("Cannot write to gpx file %s: %s", *outName, err)
+		os.Exit(1)
+	}
+
+	_, err = gpxFile.Write(xml)
+	if err != nil {
+		fmt.Printf("Cannot write to gpx file %s: %s", *outName, err)
+		os.Exit(1)
+	}
 }
