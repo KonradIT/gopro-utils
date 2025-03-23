@@ -3,7 +3,8 @@ package telemetry
 import (
 	"time"
 
-	"github.com/paulmach/go.geo"
+	"github.com/paulmach/orb"
+	geo "github.com/paulmach/orb/geo"
 )
 
 // Represents one second of telemetry data
@@ -28,7 +29,7 @@ type TELEM_OUT struct {
 	Track       float64 `json:"track,omitempty"`
 }
 
-var pp *geo.Point = geo.NewPoint(10, 10)
+var pp = orb.Point{10, 10}
 var last_good_track float64 = 0
 
 // zeroes out the telem struct
@@ -72,8 +73,8 @@ func (t *TELEM) ShitJson() []TELEM_OUT {
 			jobj.Temp = t.Temp.Temp
 		}
 
-		p := geo.NewPoint(jobj.GPS5.Longitude, jobj.GPS5.Latitude)
-		jobj.Track = pp.BearingTo(p)
+		p := orb.Point{jobj.GPS5.Longitude, jobj.GPS5.Latitude}
+		jobj.Track = geo.Bearing(pp, p)
 		pp = p
 
 		if jobj.Track < 0 {
