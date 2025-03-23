@@ -1,6 +1,14 @@
 GoPro Metadata Format Parser
 ============================
 
+Originally written by @stilldavid, now maintained by @konradit
+
+Targeting newish versions of Go, 1.23 to start, will bump to 1.24 later
+
+Original readme:
+
+--- 
+
 TLDR:
 
 1. `ffmpeg -y -i GOPR0001.MP4 -codec copy -map 0:m:handler_name:"	GoPro MET" -f rawvideo GOPR0001.bin`
