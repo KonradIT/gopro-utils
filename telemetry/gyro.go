@@ -2,10 +2,10 @@ package telemetry
 
 import (
 	"encoding/binary"
-	"errors"
+	"fmt"
 )
 
-// 3-axis Gyroscope data in rad/s
+// 3-axis Gyroscope data in rad/s.
 type GYRO struct {
 	X float64
 	Y float64
@@ -14,7 +14,7 @@ type GYRO struct {
 
 func (gyro *GYRO) Parse(bytes []byte, scale *SCAL) error {
 	if len(bytes) != 6 {
-		return errors.New("invalid length GYRO packet")
+		return fmt.Errorf("gyro: %w", ErrInvalidTelemLength)
 	}
 
 	gyro.X = float64(int16(binary.BigEndian.Uint16(bytes[0:2]))) / float64(scale.Values[0])

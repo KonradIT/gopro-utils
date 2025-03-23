@@ -2,10 +2,10 @@ package telemetry
 
 import (
 	"encoding/binary"
-	"errors"
+	"fmt"
 )
 
-// Accelerometer in m/s for XYZ
+// Accelerometer in m/s for XYZ.
 type ACCL struct {
 	X float64
 	Y float64
@@ -14,7 +14,7 @@ type ACCL struct {
 
 func (accl *ACCL) Parse(bytes []byte, scale *SCAL) error {
 	if len(bytes) != 6 {
-		return errors.New("invalid length ACCL packet")
+		return fmt.Errorf("accl: %w", ErrInvalidTelemLength)
 	}
 
 	accl.X = float64(int16(binary.BigEndian.Uint16(bytes[0:2]))) / float64(scale.Values[0])

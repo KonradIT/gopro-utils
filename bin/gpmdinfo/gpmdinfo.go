@@ -15,6 +15,7 @@ func main() {
 
 	if *inName == "" {
 		flag.Usage()
+
 		return
 	}
 
@@ -41,6 +42,7 @@ func main() {
 			if err == io.EOF {
 				break
 			}
+
 			fmt.Println(err)
 			os.Exit(1)
 		}

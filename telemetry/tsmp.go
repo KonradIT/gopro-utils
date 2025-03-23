@@ -2,17 +2,17 @@ package telemetry
 
 import (
 	"encoding/binary"
-	"errors"
+	"fmt"
 )
 
-// Total number of samples
+// Total number of samples.
 type TSMP struct {
 	Samples uint32
 }
 
-func (t *TSMP) Parse(bytes []byte, scale *SCAL) error {
+func (t *TSMP) Parse(bytes []byte) error {
 	if len(bytes) != 4 {
-		return errors.New("invalid length TSMP packet")
+		return fmt.Errorf("tsmp: %w", ErrInvalidTelemLength)
 	}
 
 	t.Samples = binary.BigEndian.Uint32(bytes[0:4])

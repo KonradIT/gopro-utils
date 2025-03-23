@@ -1,18 +1,18 @@
 package telemetry
 
 import (
-	"errors"
+	"fmt"
 	"time"
 )
 
-// GPS-acquired timestamp
+// GPS-acquired timestamp.
 type GPSU struct {
 	Time time.Time
 }
 
 func (gpsu *GPSU) Parse(bytes []byte) error {
 	if len(bytes) != 16 {
-		return errors.New("invalid length GPSU packet")
+		return fmt.Errorf("gpsu: %w", ErrInvalidTelemLength)
 	}
 
 	t, err := time.Parse("060102150405", string(bytes))

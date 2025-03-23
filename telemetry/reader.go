@@ -9,10 +9,12 @@ type Parser interface {
 	Parse(bytes []byte) error
 }
 
-var _ Parser = &GPSU{}
-var _ Parser = &GPSP{}
-var _ Parser = &GPSF{}
-var _ Parser = &TMPC{}
+var (
+	_ Parser = &GPSU{}
+	_ Parser = &GPSP{}
+	_ Parser = &GPSF{}
+	_ Parser = &TMPC{}
+)
 
 func Read(f io.Reader) (*Telem, error) {
 	labels := []string{
@@ -138,9 +140,9 @@ func Read(f io.Reader) (*Telem, error) {
 			return nil, err
 		}
 
-		label_string := string(label)
+		labelStr := string(label)
 
-		if !slices.Contains(labels, label_string) {
+		if !slices.Contains(labels, labelStr) {
 			continue
 		}
 
@@ -156,21 +158,26 @@ func Read(f io.Reader) (*Telem, error) {
 		}
 
 		// skip empty packets
-		if label_string == "EMPT" {
-			io.CopyN(io.Discard, f, 4)
+		if labelStr == "EMPT" {
+			_, err := io.CopyN(io.Discard, f, 4)
+			if err != nil {
+				return nil, err
+			}
+
 			continue
 		}
 
 		// extract the size and length
-		val_size := int64(desc[1])
-		num_values := (int64(desc[2]) << 8) | int64(desc[3])
-		length := val_size * num_values
+		valSize := int64(desc[1])
+		numValues := (int64(desc[2]) << 8) | int64(desc[3])
+		length := valSize * numValues
 
 		// uncomment to see label, type, size and length
-		//fmt.Printf("%s (%c) of size %v and len %v\n", label, desc[0], val_size, length)
+		// fmt.Printf("%s (%c) of size %v and len %v\n", label, desc[0], val_size, length)
 
-		if label_string == "SCAL" {
-			value := make([]byte, val_size*num_values)
+		if labelStr == "SCAL" {
+			value := make([]byte, valSize*numValues)
+
 			read, err = f.Read(value)
 			if err == io.EOF || read == 0 {
 				return nil, err
@@ -179,64 +186,78 @@ func Read(f io.Reader) (*Telem, error) {
 			// clear the scales
 			s.Values = s.Values[:0]
 
-			err := s.Parse(value, val_size)
+			err := s.Parse(value, valSize)
 			if err != nil {
 				return nil, err
 			}
 		} else {
-			value := make([]byte, val_size)
+			value := make([]byte, valSize)
 
-			for i := int64(0); i < num_values; i++ {
+			for range numValues {
 				read, err := f.Read(value)
 				if err == io.EOF || read == 0 {
 					return nil, err
 				}
 
 				// I think DVID is the payload boundary; this might be a bad assumption
-				if label_string == "DVID" {
-
+				switch labelStr {
+				case "DVID":
 					// XXX: I think this might skip the first sentence
 					return t, nil
-				} else if label_string == "GPS5" {
+
+				case "GPS5":
 					g := GPS5{}
-					g.Parse(value, &s)
+					err := g.Parse(value, &s)
+					if err != nil {
+						return nil, err
+					}
 					t.Gps = append(t.Gps, g)
-				} else if label_string == "GPSU" {
+
+				case "GPSU":
 					g := GPSU{}
 					err := g.Parse(value)
 					if err != nil {
 						return nil, err
 					}
 					t.Time = g
-				} else if label_string == "ACCL" {
+
+				case "ACCL":
 					a := ACCL{}
 					err := a.Parse(value, &s)
 					if err != nil {
 						return nil, err
 					}
 					t.Accl = append(t.Accl, a)
-				} else if label_string == "TMPC" {
+
+				case "TMPC":
 					tmp := TMPC{}
-					tmp.Parse(value)
+					err := tmp.Parse(value)
+					if err != nil {
+						return nil, err
+					}
 					t.Temp = tmp
-				} else if label_string == "TSMP" {
+
+				case "TSMP":
 					tsmp := TSMP{}
-					tsmp.Parse(value, &s)
-				} else if label_string == "GYRO" {
+					tsmp.Parse(value)
+
+				case "GYRO":
 					g := GYRO{}
 					err := g.Parse(value, &s)
 					if err != nil {
 						return nil, err
 					}
 					t.Gyro = append(t.Gyro, g)
-				} else if label_string == "GPSP" {
+
+				case "GPSP":
 					g := GPSP{}
 					err := g.Parse(value)
 					if err != nil {
 						return nil, err
 					}
 					t.GpsAccuracy = g
-				} else if label_string == "GPSF" {
+
+				case "GPSF":
 					g := GPSF{}
 					err := g.Parse(value)
 					if err != nil {
@@ -251,7 +272,10 @@ func Read(f io.Reader) (*Telem, error) {
 		mod := length % 4
 		if mod != 0 {
 			seek := 4 - mod
-			io.CopyN(io.Discard, f, seek)
+			_, err := io.CopyN(io.Discard, f, seek)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
