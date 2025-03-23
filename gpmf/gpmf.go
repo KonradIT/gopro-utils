@@ -150,7 +150,7 @@ func (scale *SCAL) Parse(bytes []byte, size int64) error {
 	s := int(size)
 
 	// No left over bytes
-	if 0 != len(bytes)%s {
+	if len(bytes)%s != 0 {
 		return errors.New("SCAL: Invalid packet length")
 	}
 
@@ -174,7 +174,7 @@ func (scale *SCAL) Parse(bytes []byte, size int64) error {
 // Parse (ACCL) - Parse byte slice into ACCL struct and scale
 func (accl *ACCL) Parse(bytes []byte, scale *SCAL) error {
 	// Check length
-	if 6 != len(bytes) {
+	if len(bytes) != 6 {
 		return errors.New("ACCL: Invalid packet length")
 	}
 
@@ -190,7 +190,7 @@ func (accl *ACCL) Parse(bytes []byte, scale *SCAL) error {
 // Parse (GYRO) - Parse byte slice into GYRO struct and scale
 func (gyro *GYRO) Parse(bytes []byte, scale *SCAL) error {
 	// Check length
-	if 6 != len(bytes) {
+	if len(bytes) != 6 {
 		return errors.New("GYRO: Invalid packet length")
 	}
 
@@ -206,8 +206,8 @@ func (gyro *GYRO) Parse(bytes []byte, scale *SCAL) error {
 // Parse (GPS5) - Parse byte slice into GPS5 struct and scale
 func (gps5 *GPS5) Parse(bytes []byte, scale *SCAL) error {
 	// Check length
-	if 20 != len(bytes) {
-		return errors.New("GPS5: Inavlid packet length")
+	if len(bytes) != 20 {
+		return errors.New("GPS5: Invalid packet length")
 	}
 
 	// Geodetic location
@@ -226,7 +226,7 @@ func (gps5 *GPS5) Parse(bytes []byte, scale *SCAL) error {
 // Parse (GPSF) - Parse byte slice into GPSF struct
 func (gpsf *GPSF) Parse(bytes []byte) error {
 	// Check length
-	if 4 != len(bytes) {
+	if len(bytes) != 4 {
 		return errors.New("GPSF: Invalid packet length")
 	}
 
@@ -240,7 +240,7 @@ func (gpsf *GPSF) Parse(bytes []byte) error {
 // Parse (GPSP) - Parse byte slice into GPSP struct
 func (gpsp *GPSP) Parse(bytes []byte) error {
 	// Check length
-	if 2 != len(bytes) {
+	if len(bytes) != 2 {
 		return errors.New("GPSP: Invalid packet length")
 	}
 
@@ -254,7 +254,7 @@ func (gpsp *GPSP) Parse(bytes []byte) error {
 // Parse (GPSU) - Parse byte slice int GPSU struct
 func (gpsu *GPSU) Parse(bytes []byte) error {
 	// Check length
-	if 16 != len(bytes) {
+	if len(bytes) != 16 {
 		return errors.New("GPSU: Invalid packet length")
 	}
 
@@ -274,7 +274,7 @@ func (gpsu *GPSU) Parse(bytes []byte) error {
 // Parse (TMPC) - Parse byte slice int TMPC struct
 func (tmpc *TMPC) Parse(bytes []byte) error {
 	// Check length
-	if 4 != len(bytes) {
+	if len(bytes) != 4 {
 		return errors.New("TMPC: Invalid packet length")
 	}
 
@@ -291,8 +291,8 @@ func (tmpc *TMPC) Parse(bytes []byte) error {
 // Parse (TSMP) - Parse byte slice int TSMP struct
 func (tsmp *TSMP) Parse(bytes []byte) error {
 	// Check length
-	if 4 != len(bytes) {
-		return errors.New("Invalid length TSMP packet")
+	if len(bytes) != 4 {
+		return errors.New("invalid length TSMP packet")
 	}
 
 	// Total number of sample

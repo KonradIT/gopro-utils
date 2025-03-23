@@ -11,7 +11,7 @@ import (
 )
 
 type data struct {
-	Data []telemetry.TELEM_OUT `json:"data"`
+	Data []telemetry.TelemOut `json:"data"`
 }
 
 func main() {
@@ -33,8 +33,8 @@ func main() {
 
 	var d data
 
-	t := &telemetry.TELEM{}
-	t_prev := &telemetry.TELEM{}
+	t := &telemetry.Telem{}
+	t_prev := &telemetry.Telem{}
 
 	for {
 		t, err = telemetry.Read(telemFile)
@@ -55,11 +55,11 @@ func main() {
 		// process until t.Time
 		t_prev.FillTimes(t.Time.Time)
 
-		telems := t_prev.ShitJson()
+		telems := t_prev.Json()
 		d.Data = append(d.Data, telems...)
 
 		*t_prev = *t
-		t = &telemetry.TELEM{}
+		t = &telemetry.Telem{}
 	}
 
 	jsonFile, err := os.Create(*outName)
