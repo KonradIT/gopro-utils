@@ -1,5 +1,9 @@
 linters:
   enable-all: true
+  disable:
+    - mnd
+    - tagliatelle
+    - exhaustruct
 
 issues:
   exclude-dirs-use-default: true

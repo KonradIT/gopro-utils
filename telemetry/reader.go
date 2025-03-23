@@ -131,7 +131,7 @@ func Read(f io.Reader) (*Telem, error) {
 	s := SCAL{}
 
 	// the full telemetry for this period
-	t := &Telem{}
+	outputTelemetry := &Telem{}
 
 	for {
 		// pick out the label
@@ -203,7 +203,7 @@ func Read(f io.Reader) (*Telem, error) {
 				switch labelStr {
 				case "DVID":
 					// XXX: I think this might skip the first sentence
-					return t, nil
+					return outputTelemetry, nil
 
 				case "GPS5":
 					g := GPS5{}
@@ -211,7 +211,8 @@ func Read(f io.Reader) (*Telem, error) {
 					if err != nil {
 						return nil, err
 					}
-					t.Gps = append(t.Gps, g)
+
+					outputTelemetry.Gps = append(outputTelemetry.Gps, g)
 
 				case "GPSU":
 					g := GPSU{}
@@ -219,7 +220,8 @@ func Read(f io.Reader) (*Telem, error) {
 					if err != nil {
 						return nil, err
 					}
-					t.Time = g
+
+					outputTelemetry.Time = g
 
 				case "ACCL":
 					a := ACCL{}
@@ -227,7 +229,8 @@ func Read(f io.Reader) (*Telem, error) {
 					if err != nil {
 						return nil, err
 					}
-					t.Accl = append(t.Accl, a)
+
+					outputTelemetry.Accl = append(outputTelemetry.Accl, a)
 
 				case "TMPC":
 					tmp := TMPC{}
@@ -235,11 +238,8 @@ func Read(f io.Reader) (*Telem, error) {
 					if err != nil {
 						return nil, err
 					}
-					t.Temp = tmp
 
-				case "TSMP":
-					tsmp := TSMP{}
-					tsmp.Parse(value)
+					outputTelemetry.Temp = tmp
 
 				case "GYRO":
 					g := GYRO{}
@@ -247,7 +247,8 @@ func Read(f io.Reader) (*Telem, error) {
 					if err != nil {
 						return nil, err
 					}
-					t.Gyro = append(t.Gyro, g)
+
+					outputTelemetry.Gyro = append(outputTelemetry.Gyro, g)
 
 				case "GPSP":
 					g := GPSP{}
@@ -255,7 +256,7 @@ func Read(f io.Reader) (*Telem, error) {
 					if err != nil {
 						return nil, err
 					}
-					t.GpsAccuracy = g
+					outputTelemetry.GpsAccuracy = g
 
 				case "GPSF":
 					g := GPSF{}
@@ -263,7 +264,8 @@ func Read(f io.Reader) (*Telem, error) {
 					if err != nil {
 						return nil, err
 					}
-					t.GpsFix = g
+
+					outputTelemetry.GpsFix = g
 				}
 			}
 		}

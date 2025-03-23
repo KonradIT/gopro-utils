@@ -32,8 +32,8 @@ type TelemOut struct {
 }
 
 var (
-	pp                    = orb.Point{10, 10}
-	lastGoodTrack float64 = 0
+	pp            = orb.Point{10, 10}
+	lastGoodTrack float64
 )
 
 // zeroes out the telem struct.
@@ -66,7 +66,7 @@ func (t *Telem) FillTimes(until time.Time) error {
 	return nil
 }
 
-func (t *Telem) Json() []TelemOut {
+func (t *Telem) Json() []TelemOut { //nolint:revive // use Json() instead.
 	var out []TelemOut
 
 	for i := range t.Gps {
