@@ -1,0 +1,14 @@
+linters:
+  enable-all: true
+
+issues:
+  exclude-dirs-use-default: true
+
+linters-settings:
+  nestif:
+    min-complexity: 5
+
+output:
+  formats:
+  - format: colored-line-number
+
