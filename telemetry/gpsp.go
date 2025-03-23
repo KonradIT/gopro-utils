@@ -2,17 +2,17 @@ package telemetry
 
 import (
 	"encoding/binary"
-	"errors"
+	"fmt"
 )
 
-// GPS position accuracy in cm
+// GPS position accuracy in cm.
 type GPSP struct {
 	Accuracy uint16
 }
 
 func (gpsp *GPSP) Parse(bytes []byte) error {
 	if len(bytes) != 2 {
-		return errors.New("invalid length GPSP packet")
+		return fmt.Errorf("gpsp: %w", ErrInvalidTelemLength)
 	}
 
 	gpsp.Accuracy = binary.BigEndian.Uint16(bytes[0:2])

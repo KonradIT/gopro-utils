@@ -2,18 +2,18 @@ package telemetry
 
 import (
 	"encoding/binary"
-	"errors"
+	"fmt"
 	"math"
 )
 
-// Temperature in °C
+// Temperature in °C.
 type TMPC struct {
 	Temp float32
 }
 
 func (temp *TMPC) Parse(bytes []byte) error {
 	if len(bytes) != 4 {
-		return errors.New("invalid length TMPC packet")
+		return fmt.Errorf("tmpc: %w", ErrInvalidTelemLength)
 	}
 
 	bits := binary.BigEndian.Uint32(bytes[0:4])

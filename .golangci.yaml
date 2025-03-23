@@ -1,0 +1,22 @@
+linters:
+  enable-all: true
+  disable:
+    - mnd
+    - tagliatelle
+    - exhaustruct
+
+issues:
+  exclude-dirs-use-default: true
+  exclude-dirs:
+    - bin/*
+
+linters-settings:
+  nestif:
+    min-complexity: 5
+
+output:
+  formats:
+  - format: colored-line-number
+
+run:
+  timeout: 10m

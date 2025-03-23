@@ -1,13 +1,16 @@
 package telemetry
 
 import (
+	"errors"
 	"time"
 
 	"github.com/paulmach/orb"
 	geo "github.com/paulmach/orb/geo"
 )
 
-// Represents one second of telemetry data
+var ErrInvalidTelemLength = errors.New("invalid telemetry length")
+
+// Represents one second of telemetry data.
 type Telem struct {
 	Accl        []ACCL
 	Gps         []GPS5
@@ -18,8 +21,7 @@ type Telem struct {
 	Temp        TMPC
 }
 
-// the thing we want, json-wise
-// GPS data might have a generated timestamp and derived track
+// GPS data might have a generated timestamp and derived track.
 type TelemOut struct {
 	*GPS5
 
@@ -29,10 +31,12 @@ type TelemOut struct {
 	Track       float64 `json:"track,omitempty"`
 }
 
-var pp = orb.Point{10, 10}
-var last_good_track float64 = 0
+var (
+	pp            = orb.Point{10, 10}
+	lastGoodTrack float64
+)
 
-// zeroes out the telem struct
+// zeroes out the telem struct.
 func (t *Telem) Clear() {
 	t.Accl = t.Accl[:0]
 	t.Gps = t.Gps[:0]
@@ -40,7 +44,7 @@ func (t *Telem) Clear() {
 	t.Time.Time = time.Time{}
 }
 
-// determines if the telem has data
+// determines if the telem has data.
 func (t *Telem) IsZero() bool {
 	// hack.
 	return t.Time.Time.IsZero()
@@ -48,10 +52,10 @@ func (t *Telem) IsZero() bool {
 
 // try to populate a timestamp for every GPS row. probably bogus.
 func (t *Telem) FillTimes(until time.Time) error {
-	len := len(t.Gps)
+	gpsLen := len(t.Gps)
 	diff := until.Sub(t.Time.Time)
 
-	offset := diff.Seconds() / float64(len)
+	offset := diff.Seconds() / float64(gpsLen)
 
 	for i := range t.Gps {
 		dur := time.Duration(float64(i)*offset*1000) * time.Millisecond
@@ -62,7 +66,7 @@ func (t *Telem) FillTimes(until time.Time) error {
 	return nil
 }
 
-func (t *Telem) Json() []TelemOut {
+func (t *Telem) Json() []TelemOut { //nolint:revive // use Json() instead.
 	var out []TelemOut
 
 	for i := range t.Gps {
@@ -84,9 +88,9 @@ func (t *Telem) Json() []TelemOut {
 		// only set the track if speed is over 1 m/s
 		// if it's slower (eg, stopped) it will drift all over with the location
 		if jobj.GPS5.Speed > 1 {
-			last_good_track = jobj.Track
+			lastGoodTrack = jobj.Track
 		} else {
-			jobj.Track = last_good_track
+			jobj.Track = lastGoodTrack
 		}
 
 		out = append(out, jobj)

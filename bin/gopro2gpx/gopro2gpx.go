@@ -20,6 +20,7 @@ func main() {
 
 	if *inName == "" {
 		flag.Usage()
+
 		return
 	}
 
@@ -49,6 +50,7 @@ func main() {
 		if t_prev.IsZero() {
 			*t_prev = *t
 			t.Clear()
+
 			continue
 		}
 

@@ -3,9 +3,12 @@ package telemetry
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 )
 
-// Scale - contains slice of multipliers for subsequent data
+var ErrInvalidSCALLength = errors.New("invalid SCAL length")
+
+// Scale - contains slice of multipliers for subsequent data.
 type SCAL struct {
 	Values []int
 }
@@ -14,7 +17,7 @@ func (scale *SCAL) Parse(bytes []byte, size int64) error {
 	s := int(size)
 
 	if len(bytes)%s != 0 {
-		return errors.New("invalid length SCAL packet")
+		return fmt.Errorf("scal: %w", ErrInvalidTelemLength)
 	}
 
 	if s == 2 {
@@ -26,7 +29,7 @@ func (scale *SCAL) Parse(bytes []byte, size int64) error {
 			scale.Values = append(scale.Values, int(binary.BigEndian.Uint32(bytes[i:i+s])))
 		}
 	} else {
-		return errors.New("unknown SCAL length")
+		return fmt.Errorf("scal: %w", ErrInvalidSCALLength)
 	}
 
 	return nil
