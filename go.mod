@@ -3,8 +3,11 @@ module github.com/konradit/gopro-utils
 go 1.23
 
 require (
-	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
-	github.com/tkrajina/gpxgo v1.0.1
+	github.com/paulmach/orb v0.11.1
+	github.com/tkrajina/gpxgo v1.4.0
 )
 
-require github.com/paulmach/go.geojson v1.4.0 // indirect
+require (
+	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
+	golang.org/x/text v0.3.7 // indirect
+)
